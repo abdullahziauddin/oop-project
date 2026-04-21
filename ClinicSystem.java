@@ -104,7 +104,7 @@ public class ClinicSystem {
     }
 
     /** True if this doctor already has an appointment on the given date. */
-    private boolean hasDoctorBookingOnDate(Doctor doctor, Object date) {
+    private boolean hasDoctorBookingOnDate(Doctor doctor, String date) {
         for (Appointment existing : appointments) {
             if (existing.getDoctor() == null) {
                 continue;
