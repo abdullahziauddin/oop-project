@@ -18,30 +18,32 @@ public class ClinicSystem {
         this.appointments = new ArrayList<>();
     }
 
-    /** Adds a patient to the system. */
-    public void addPatient(Patient patient) {
+    /** Adds a patient to the system. Returns false if rejected. */
+    public boolean addPatient(Patient patient) {
         if (patient == null) {
             System.out.println("Error: patient cannot be null.");
-            return;
+            return false;
         }
         if (findPatientById(patient.getId()) != null) {
             System.out.println("Error: patient ID already exists.");
-            return;
+            return false;
         }
         patients.add(patient);
+        return true;
     }
 
-    /** Adds a doctor to the system. */
-    public void addDoctor(Doctor doctor) {
+    /** Adds a doctor to the system. Returns false if rejected. */
+    public boolean addDoctor(Doctor doctor) {
         if (doctor == null) {
             System.out.println("Error: doctor cannot be null.");
-            return;
+            return false;
         }
         if (findDoctorById(doctor.getId()) != null) {
             System.out.println("Error: doctor ID already exists.");
-            return;
+            return false;
         }
         doctors.add(doctor);
+        return true;
     }
 
     /**
@@ -167,6 +169,17 @@ public class ClinicSystem {
     /** Returns how many doctors are stored. */
     public int getTotalDoctors() {
         return doctors.size();
+    }
+
+    /** Returns how many appointments are currently assigned to the doctor id. */
+    public int getAppointmentsForDoctor(int doctorId) {
+        int count = 0;
+        for (Appointment a : appointments) {
+            if (a.getDoctor() != null && a.getDoctor().getId() == doctorId) {
+                count++;
+            }
+        }
+        return count;
     }
 
     /** True if this doctor already has an appointment on the given date. */

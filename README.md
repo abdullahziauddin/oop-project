@@ -1,6 +1,6 @@
 # Clinic Appointment System
 
-Console-oriented **clinic management** coursework: register patients and doctors, book appointments, and keep the schedule consistent. This repository holds the **core domain logic** in `ClinicSystem`—no menus, no file I/O, no extra frameworks.
+Console-oriented **clinic management** coursework: register patients and doctors, book appointments, and keep the schedule consistent.
 
 ---
 
@@ -10,8 +10,9 @@ Console-oriented **clinic management** coursework: register patients and doctors
 |--------|----------|
 | **Storage** | `ArrayList` for patients, doctors, and appointments |
 | **Double booking** | Same doctor + same date → appointment is rejected |
-| **Invalid appointments** | Missing patient or doctor → error line, nothing stored |
+| **Invalid appointments** | Missing patient/doctor/date or duplicates are rejected with clear messages |
 | **Referential cleanup** | Deleting a patient or doctor removes their appointments |
+| **Aggregation** | Count appointments per doctor by doctor ID |
 
 ---
 
@@ -26,12 +27,31 @@ Console-oriented **clinic management** coursework: register patients and doctors
 
 ```
 oop-project/
-├── ClinicSystem.java   # Core logic (your submission focus)
+├── ClinicSystem.java   # Abdullah scope: core business logic
+├── Main.java           # Ibrahim scope: menu + input handling
 ├── README.md
 └── .gitignore          # Ignores *.class
 ```
 
-Other coursework files (e.g. `Patient.java`, `Doctor.java`, `Appointment.java`, `Main.java`) are expected to live **alongside** `ClinicSystem` in the same package when you build the full app.
+Other coursework files (e.g. `Patient.java`, `Doctor.java`, `Appointment.java`) are expected to live **alongside** these files in the same package when you build the full app.
+
+---
+
+## Team scope summary
+
+- **Abdullah (`ClinicSystem.java`)**
+  - In-memory storage with `ArrayList` for patients, doctors, and appointments
+  - Validation for nulls and duplicate IDs
+  - Appointment conflict prevention (same doctor + same date)
+  - Search, list, update, delete, totals, and per-doctor appointment count
+  - Referential cleanup of appointments on patient/doctor delete
+
+- **Ibrahim (`Main.java`)**
+  - Console menu loop with `String[]` menu options
+  - Input parsing via `Scanner` + `try/catch` for numeric fields
+  - Calls `ClinicSystem` methods only (no duplicated business logic)
+  - User flows for add/list/search/update/delete and doctor appointment count
+  - Clear success/failure and empty-state output messages
 
 ---
 
@@ -72,13 +92,14 @@ rm -f *.class
 
 **Mutators**
 
-- `addPatient(Patient p)` / `addDoctor(Doctor d)` — append to the registry  
+- `addPatient(Patient p)` / `addDoctor(Doctor d)` — validate and return success status (`boolean`)  
 - `addAppointment(Appointment a)` — validates, prevents double booking, then stores  
 
 **Queries**
 
 - `searchPatientById(int id)` / `searchDoctorById(int id)` — `null` if not found  
-- `getTotalPatients()` / `getTotalAppointments()`  
+- `getTotalPatients()` / `getTotalDoctors()` / `getTotalAppointments()`  
+- `getAppointmentsForDoctor(int doctorId)`  
 
 **Removal**
 
