@@ -164,6 +164,11 @@ public class ClinicSystem {
         return appointments.size();
     }
 
+    /** Returns how many doctors are stored. */
+    public int getTotalDoctors() {
+        return doctors.size();
+    }
+
     /** True if this doctor already has an appointment on the given date. */
     private boolean hasDoctorBookingOnDate(Doctor doctor, String date) {
         String normalizedDate = normalizeDate(date);
