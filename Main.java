@@ -18,7 +18,8 @@ public class Main {
                 "10. Update Doctor",
                 "11. Search Patient",
                 "12. Search Doctor",
-                "13. Exit"
+                "13. Doctor Appointment Count",
+                "14. Exit"
         };
 
         while (true) {
@@ -43,10 +44,17 @@ public class Main {
                         int id = Integer.parseInt(scanner.nextLine());
                         System.out.print("Enter Patient Name: ");
                         String name = scanner.nextLine();
-                        system.addPatient(new Patient(id, name));
-                        System.out.println("Patient added.");
+                        if (name.trim().isEmpty()) {
+                            System.out.println("Invalid name.");
+                            break;
+                        }
+                        if (system.addPatient(new Patient(id, name))) {
+                            System.out.println("Patient added.");
+                        }
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid input. Please enter a number.");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
                     }
                     break;
 
@@ -56,10 +64,17 @@ public class Main {
                         int id = Integer.parseInt(scanner.nextLine());
                         System.out.print("Enter Doctor Name: ");
                         String name = scanner.nextLine();
-                        system.addDoctor(new Doctor(id, name));
-                        System.out.println("Doctor added.");
+                        if (name.trim().isEmpty()) {
+                            System.out.println("Invalid name.");
+                            break;
+                        }
+                        if (system.addDoctor(new Doctor(id, name))) {
+                            System.out.println("Doctor added.");
+                        }
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid input. Please enter a number.");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
                     }
                     break;
 
@@ -77,6 +92,10 @@ public class Main {
 
                         if (patient == null || doctor == null) {
                             System.out.println("Invalid patient or doctor ID.");
+                            break;
+                        }
+                        if (date == null || date.trim().isEmpty()) {
+                            System.out.println("Invalid date.");
                             break;
                         }
 
@@ -152,11 +171,19 @@ public class Main {
                         int newId = Integer.parseInt(scanner.nextLine());
                         System.out.print("Enter New Patient Name: ");
                         String name = scanner.nextLine();
+                        if (name.trim().isEmpty()) {
+                            System.out.println("Invalid name.");
+                            break;
+                        }
                         if (system.updatePatient(oldId, new Patient(newId, name))) {
                             System.out.println("Patient updated.");
+                        } else {
+                            System.out.println("Patient update failed.");
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid input. Please enter a number.");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
                     }
                     break;
 
@@ -168,11 +195,19 @@ public class Main {
                         int newId = Integer.parseInt(scanner.nextLine());
                         System.out.print("Enter New Doctor Name: ");
                         String name = scanner.nextLine();
+                        if (name.trim().isEmpty()) {
+                            System.out.println("Invalid name.");
+                            break;
+                        }
                         if (system.updateDoctor(oldId, new Doctor(newId, name))) {
                             System.out.println("Doctor updated.");
+                        } else {
+                            System.out.println("Doctor update failed.");
                         }
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid input. Please enter a number.");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println(e.getMessage());
                     }
                     break;
 
@@ -207,6 +242,22 @@ public class Main {
                     break;
 
                 case 13:
+                    try {
+                        System.out.print("Enter Doctor ID: ");
+                        int doctorId = Integer.parseInt(scanner.nextLine());
+                        Doctor doctor = system.searchDoctorById(doctorId);
+                        if (doctor == null) {
+                            System.out.println("Doctor not found.");
+                            break;
+                        }
+                        int count = system.getAppointmentsForDoctor(doctorId);
+                        System.out.println("Doctor [ID: " + doctorId + "] has " + count + " appointments.");
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                    break;
+
+                case 14:
                     System.out.println("Exiting...");
                     scanner.close();
                     return;
