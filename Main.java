@@ -12,7 +12,13 @@ public class Main {
                 "4. List Patients",
                 "5. List Doctors",
                 "6. List Appointments",
-                "7. Exit"
+                "7. Delete Patient",
+                "8. Delete Doctor",
+                "9. Update Patient",
+                "10. Update Doctor",
+                "11. Search Patient",
+                "12. Search Doctor",
+                "13. Exit"
         };
 
         while (true) {
@@ -74,26 +80,133 @@ public class Main {
                             break;
                         }
 
-                        system.addAppointment(new Appointment(patient, doctor, date));
-                        System.out.println("Appointment added.");
+                        if (system.addAppointment(new Appointment(patient, doctor, date))) {
+                            System.out.println("Appointment added.");
+                        }
                     } catch (NumberFormatException e) {
                         System.out.println("Invalid input. Please enter a number.");
                     }
                     break;
 
                 case 4:
-                    system.listPatients();
+                    if (system.getTotalPatients() == 0) {
+                        System.out.println("No patients found.");
+                    } else {
+                        system.listPatients();
+                    }
                     break;
 
                 case 5:
-                    system.listDoctors();
+                    if (system.getTotalDoctors() == 0) {
+                        System.out.println("No doctors found.");
+                    } else {
+                        system.listDoctors();
+                    }
                     break;
 
                 case 6:
-                    system.listAppointments();
+                    if (system.getTotalAppointments() == 0) {
+                        System.out.println("No appointments found.");
+                    } else {
+                        system.listAppointments();
+                    }
                     break;
 
                 case 7:
+                    try {
+                        System.out.print("Enter Patient ID to delete: ");
+                        int patientId = Integer.parseInt(scanner.nextLine());
+                        Patient patient = system.searchPatientById(patientId);
+                        if (patient == null) {
+                            System.out.println("Patient not found.");
+                            break;
+                        }
+                        system.deletePatient(patientId);
+                        System.out.println("Patient deleted.");
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                    break;
+
+                case 8:
+                    try {
+                        System.out.print("Enter Doctor ID to delete: ");
+                        int doctorId = Integer.parseInt(scanner.nextLine());
+                        Doctor doctor = system.searchDoctorById(doctorId);
+                        if (doctor == null) {
+                            System.out.println("Doctor not found.");
+                            break;
+                        }
+                        system.deleteDoctor(doctorId);
+                        System.out.println("Doctor deleted.");
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                    break;
+
+                case 9:
+                    try {
+                        System.out.print("Enter Patient ID to update: ");
+                        int oldId = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Enter New Patient ID: ");
+                        int newId = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Enter New Patient Name: ");
+                        String name = scanner.nextLine();
+                        if (system.updatePatient(oldId, new Patient(newId, name))) {
+                            System.out.println("Patient updated.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                    break;
+
+                case 10:
+                    try {
+                        System.out.print("Enter Doctor ID to update: ");
+                        int oldId = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Enter New Doctor ID: ");
+                        int newId = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Enter New Doctor Name: ");
+                        String name = scanner.nextLine();
+                        if (system.updateDoctor(oldId, new Doctor(newId, name))) {
+                            System.out.println("Doctor updated.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                    break;
+
+                case 11:
+                    try {
+                        System.out.print("Enter Patient ID to search: ");
+                        int patientId = Integer.parseInt(scanner.nextLine());
+                        Patient patient = system.searchPatientById(patientId);
+                        if (patient == null) {
+                            System.out.println("Patient not found.");
+                        } else {
+                            System.out.println(patient);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                    break;
+
+                case 12:
+                    try {
+                        System.out.print("Enter Doctor ID to search: ");
+                        int doctorId = Integer.parseInt(scanner.nextLine());
+                        Doctor doctor = system.searchDoctorById(doctorId);
+                        if (doctor == null) {
+                            System.out.println("Doctor not found.");
+                        } else {
+                            System.out.println(doctor);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                    break;
+
+                case 13:
                     System.out.println("Exiting...");
                     scanner.close();
                     return;
