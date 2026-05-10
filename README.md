@@ -1,86 +1,36 @@
 # Clinic Appointment System
 
-Console-oriented **clinic management** coursework: register patients and doctors, book appointments, and keep the schedule consistent.
+Console Java application for **coursework**: register **patients** and **doctors**, **book appointments** with duplicate-slot prevention, and **report** how many appointments a doctor has.
 
 ---
 
-## Highlights
+## Team
 
-| Concern | Behavior |
-|--------|----------|
-| **Storage** | `ArrayList` for patients, doctors, and appointments |
-| **Double booking** | Same doctor + same date → appointment is rejected |
-| **Invalid appointments** | Missing patient/doctor/date or duplicates are rejected with clear messages |
-| **Referential cleanup** | Deleting a patient or doctor removes their appointments |
-| **Aggregation** | Count appointments per doctor by doctor ID |
+Coursework is split into **four tasks** (one primary owner each):
 
----
+| Task | Assignee *(fill in Task 2 name when finalized)* | Deliverables |
+|------|--------------------------------------------------|--------------|
+| **Task 1 — Appointments** | Samar Jnene | `Appointment.java` — links `Patient` + `Doctor`; creation via menu; **double-booking guard** (same doctor + same date); **list all** appointments. Cooperates with `ClinicSystem.addAppointment` / `hasDoctorBookingOnDate` and `Main` (menu cases 3, 6). |
+| **Task 2 — Data classes** | Don't know his name | `Patient.java`, `Doctor.java` — **private** fields; **overloaded** constructors; getters/setters **with validation**; **`toString()`**. |
+| **Task 3 — Core system / registry** | Abdullah | `ClinicSystem.java` — `ArrayList` storage for patients, doctors, appointments; unique IDs; cascade deletes; search/update/delete/list; **no double booking** enforcement; per-doctor appointment counts. |
+| **Task 4 — Application shell & robustness** | Ibrahim | `Main.java` + `ApplicationMenu.java` — console flow, `Scanner` input, **`try/catch`** for invalid numeric input; menu lines live in **`ApplicationMenu`** (private `String[]`); delegates all rules to `ClinicSystem`. |
 
-## Requirements
-
-- **Java** (JDK 17+ recommended; JDK 21/25 work fine)
-- Plain `javac` / `java` — no Maven/Gradle required for the core class
+If your brief requires **student IDs** or a fixed group line on the cover sheet, add them to this table or under **Submission**.
 
 ---
 
-## Project layout
+## How to run
 
-```
-oop-project/
-├── ClinicSystem.java   # Abdullah scope: core business logic
-├── Main.java           # Ibrahim scope: menu + input handling
-├── README.md
-└── .gitignore          # Ignores *.class
-```
+Requirements: **JDK 17+** (JDK 21+ is fine). No Maven/Gradle.
 
-Other coursework files (e.g. `Patient.java`, `Doctor.java`, `Appointment.java`) are expected to live **alongside** these files in the same package when you build the full app.
-
----
-
-## Team scope summary
-
-- **Abdullah (`ClinicSystem.java`)**
-  - In-memory storage with `ArrayList` for patients, doctors, and appointments
-  - Validation for nulls and duplicate IDs
-  - Appointment conflict prevention (same doctor + same date)
-  - Search, list, update, delete, totals, and per-doctor appointment count
-  - Referential cleanup of appointments on patient/doctor delete
-
-- **Ibrahim (`Main.java`)**
-  - Console menu loop with `String[]` menu options
-  - Input parsing via `Scanner` + `try/catch` for numeric fields
-  - Calls `ClinicSystem` methods only (no duplicated business logic)
-  - User flows for add/list/search/update/delete and doctor appointment count
-  - Clear success/failure and empty-state output messages
-
----
-
-## Model contract
-
-`ClinicSystem` assumes teammates implement these accessors consistently:
-
-| Type | Required API |
-|------|----------------|
-| `Patient` | `int getId()` |
-| `Doctor` | `int getId()` |
-| `Appointment` | `Patient getPatient()`, `Doctor getDoctor()`, `String getDate()` |
-
-**Date:** `getDate()` must return a `String` (e.g. `"2026-04-22"` or `"Mon 9am"`). Matching uses `Objects.equals`, so two strings must agree exactly to be the “same” slot.
-
-**Listings:** `listPatients`, `listDoctors`, and `listAppointments` call `System.out.println` on each object—override `toString()` on your models for readable output.
-
----
-
-## Build & run
-
-From the project root (after all `.java` sources exist):
+From the project root:
 
 ```bash
 javac *.java
 java Main
 ```
 
-Remove stray bytecode if needed:
+Clean compiled classes:
 
 ```bash
 rm -f *.class
@@ -88,42 +38,95 @@ rm -f *.class
 
 ---
 
-## Public API (summary)
+## Implemented features
 
-**Mutators**
-
-- `addPatient(Patient p)` / `addDoctor(Doctor d)` — validate and return success status (`boolean`)  
-- `addAppointment(Appointment a)` — validates, prevents double booking, then stores  
-
-**Queries**
-
-- `searchPatientById(int id)` / `searchDoctorById(int id)` — `null` if not found  
-- `getTotalPatients()` / `getTotalDoctors()` / `getTotalAppointments()`  
-- `getAppointmentsForDoctor(int doctorId)`  
-
-**Removal**
-
-- `deletePatient(int id)` / `deleteDoctor(int id)` — removes the entity **and** dependent appointments  
-
-**Listing**
-
-- `listPatients()` / `listDoctors()` / `listAppointments()` — one `println` per row  
+1. **Patients** — add, list, search by ID, update (ID/name), delete (removes linked appointments).
+2. **Doctors** — add, list, search by ID, update, delete (removes linked appointments).
+3. **Appointments** — add (patient ID + doctor ID + date string), list; rejects invalid IDs, empty date, and **double booking** (same doctor + same normalized date).
+4. **Totals** — counts for patients, doctors, appointments.
+5. **Per-doctor summary** — count appointments for a given doctor ID (`Doctor Appointment Count` menu option).
 
 ---
 
-## Design notes
+## Where `ArrayList` is used
 
-- **Single responsibility:** `ClinicSystem` only manages in-memory collections and rules; UI belongs elsewhere.  
-- **Encapsulation:** Lists are private; collaborators interact through methods only.  
-- **No static global state:** one `ClinicSystem` instance per application is the natural lifecycle.
+All persistent domain collections are **`java.util.ArrayList`** inside **`ClinicSystem`**:
+
+| List field | Element type | Role |
+|------------|--------------|------|
+| `patients` | `Patient` | All registered patients |
+| `doctors` | `Doctor` | All registered doctors |
+| `appointments` | `Appointment` | All bookings |
+
+**Operations on these lists** include: add (`add`), remove (`remove`, `removeIf`), indexed update (`set`), linear **search** by ID, iteration for listing, and **aggregation** (count appointments per doctor via `getAppointmentsForDoctor`).
 
 ---
 
-## Contributing (team)
+## Where the array is used
 
-1. Keep the **model contract** stable, or update this README when it changes.  
-2. Do not commit `*.class` files (already ignored).  
-3. Run `javac *.java` before opening a PR so everyone stays green.
+**`ApplicationMenu.java`** holds a private **`String[]`** of option lines (default constructor builds the 14 clinic actions). **`Main`** creates `new ApplicationMenu()` and calls `printLines(System.out)` each loop — a fixed list of choices (not a trivial single-element array). The class also provides an **overloaded constructor** that accepts a custom `String[]` (validated, copied defensively).
+
+---
+
+## UML class diagram
+
+The class diagram for submission is [`docs/uml-class-diagram.png`](docs/uml-class-diagram.png) (includes **`ApplicationMenu`**).
+
+![UML class diagram — Clinic Appointment Scheduler](docs/uml-class-diagram.png)
+
+Include **`docs/uml-class-diagram.png`** in your submission ZIP with the source code, per coursework instructions.
+
+---
+
+## Project layout
+
+```
+oop-project/
+├── Main.java
+├── ClinicSystem.java
+├── ApplicationMenu.java
+├── Patient.java
+├── Doctor.java
+├── Appointment.java
+├── README.md
+├── docs/
+│   └── uml-class-diagram.png
+└── .gitignore
+```
+
+---
+
+## Design summary
+
+- **`Main`** — console UI only: `Scanner`, menu loop, `try/catch` for invalid numeric input; delegates to **`ClinicSystem`**; uses **`ApplicationMenu`** for option text.
+- **`ApplicationMenu`** — encapsulates the menu **`String[]`**; default and overloaded constructors; prints lines via `printLines`.
+- **`ClinicSystem`** — owns three `ArrayList`s; enforces unique IDs, booking rules, and cascade removal of appointments when a patient or doctor is deleted.
+- **`Patient` / `Doctor` / `Appointment`** — private fields, validation in setters, overloaded constructors (no-arg + parameterized).
+
+**Class count (excluding `Main`):** `ClinicSystem`, `ApplicationMenu`, `Patient`, `Doctor`, `Appointment` — **five** classes.
+
+---
+
+## Public API (`ClinicSystem`)
+
+**Mutators:** `addPatient`, `addDoctor`, `addAppointment`, `updatePatient`, `updateDoctor`, `deletePatient`, `deleteDoctor`
+
+**Queries:** `searchPatientById`, `searchDoctorById`, `getTotalPatients`, `getTotalDoctors`, `getTotalAppointments`, `getAppointmentsForDoctor`
+
+**Listing:** `listPatients`, `listDoctors`, `listAppointments` (each prints one line per record via `toString()`)
+
+---
+
+## File I / O
+
+Not implemented — no assignment bonus for persistence in this version.
+
+---
+
+## Contributing
+
+1. Run `javac *.java` before pushing.
+2. Do not commit `*.class` files (ignored via `.gitignore`).
 
 ---
 

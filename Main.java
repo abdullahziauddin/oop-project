@@ -4,29 +4,11 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ClinicSystem system = new ClinicSystem();
-
-        String[] menu = {
-                "1. Add Patient",
-                "2. Add Doctor",
-                "3. Add Appointment",
-                "4. List Patients",
-                "5. List Doctors",
-                "6. List Appointments",
-                "7. Delete Patient",
-                "8. Delete Doctor",
-                "9. Update Patient",
-                "10. Update Doctor",
-                "11. Search Patient",
-                "12. Search Doctor",
-                "13. Doctor Appointment Count",
-                "14. Exit"
-        };
+        ApplicationMenu menu = new ApplicationMenu();
 
         while (true) {
             System.out.println("\n=== Clinic Appointment System ===");
-            for (String option : menu) {
-                System.out.println(option);
-            }
+            menu.printLines(System.out);
 
             System.out.print("Choose an option: ");
             int choice;
